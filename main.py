@@ -16,7 +16,8 @@ def WH(name, surname, font):
     return width, height, space
 
 
-def draw_text(name, surname, font):
+# Отвечает за отрисовку текста ФИО
+def draw_text(name, surname, font, fill):
     offset = (20, 0)  # отступ текста от верхнего левого края
     margins = (10, 10)  # поля вокруг текста
     width, height, space = WH(name, surname, font)
@@ -25,13 +26,13 @@ def draw_text(name, surname, font):
                      height + offset[1] + margins[1] * 2),
                     (255, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    draw.multiline_text(offset, f'{name}\n{surname}', font=font, fill='#C4C4C4', spacing=26)
+    draw.multiline_text(offset, f'{name}\n{surname}', font=font, fill=fill, spacing=26)
 
     return img, space
 
 
-def mount_watermark(name, surname, headline):
-    img_text, space = draw_text(name, surname, headline)
+def mount_watermark(name, surname, img_logo, headline, fill):
+    img_text, space = draw_text(name, surname, headline, fill)
     img_finish = Image.new('RGBA', (img_logo.size[0] + img_text.size[0],
                                     img_logo.size[1]),
                            (255, 0, 0, 0))
@@ -47,21 +48,42 @@ def mount_watermark(name, surname, headline):
     return img_finish
 
 
-if os.path.exists("logo"):
-    pass
-else:
-    os.mkdir("logo")
+def checkDir():
+    if not os.path.isfile("input.txt"):
+        raise "Отсуствует файл input.txt"
+    if not os.path.exists("result"):
+        os.mkdir("result")
+    if not os.path.exists("result/logo_post"):
+        os.mkdir("result/logo_post")
+    if not os.path.exists("result/logo_watermark"):
+        os.mkdir("result/logo_watermark")
 
-if os.path.isfile("input.txt"):
-    pass
-else:
-    open("input.txt", "w+")
 
-headline = ImageFont.truetype("./futurademic.ttf", 240)
-img_logo = Image.open('watermark_pattern.png')
-with open("input.txt", "r+", encoding="utf-8") as file:
-    for stroke in file:
-        name, surname = stroke.strip().split()
-        img_finish = mount_watermark(name, surname, headline)
-        # img_finish.show()
-        img_finish.save(f'logo/logo_{name}_{surname}.png', 'PNG')
+def createPostImage(headline, logo):
+    with open("input.txt", "r+", encoding="utf-8") as file:
+        for stroke in file:
+            text = stroke.strip().split()
+            name, surname = text[0], text[1]
+            img_finish = mount_watermark(name, surname, logo, headline, '#C4C4C4')
+
+            img_finish.save(f'result/logo_post/post_{name}_{surname}.png', 'PNG')
+
+
+def createWatermarkImage(headline, logo):
+    with open("input.txt", "r+", encoding="utf-8") as file:
+        for stroke in file:
+            text = stroke.strip().split()
+            name, surname = text[0], text[1]
+            img_finish = mount_watermark(name, surname, logo, headline, '#FFFFFF')
+
+            img_finish.save(f'result/logo_watermark/watermark_{name}_{surname}.png', 'PNG')
+
+
+if __name__ == "__main__":
+    checkDir()
+    headline = ImageFont.truetype("fonts/futurademic.ttf", 240)
+    logo_watermark = Image.open('patterns/watermark.png')
+    logo_post = Image.open('patterns/post.png')
+
+    createPostImage(headline, logo_post)
+    createWatermarkImage(headline, logo_watermark)
