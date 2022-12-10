@@ -2,7 +2,10 @@ import os
 
 from PIL import Image, ImageDraw, ImageFont
 
+HEIGHT = 179  # кроп по высоте
 
+
+# Отвечает за формирование размеров текста
 def WH(name, surname, font):
     ascent, descent = font.getmetrics()
 
@@ -40,7 +43,7 @@ def mount_watermark(name, surname, img_logo, headline, fill):
     height = 168 - 17
     img_finish.paste(img_text, (img_logo.size[0], int(height)))
 
-    fixed_height = 179
+    fixed_height = HEIGHT
 
     height_percent = (fixed_height / float(img_finish.size[1]))
     width_size = int((float(img_finish.size[0]) * float(height_percent)))
