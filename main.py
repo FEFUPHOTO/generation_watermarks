@@ -53,6 +53,7 @@ def mount_watermark(name, surname, img_logo, headline, fill):
 
 def checkDir():
     if not os.path.isfile("input.txt"):
+        open('input.txt', 'w')
         raise "Отсуствует файл input.txt"
     if not os.path.exists("result"):
         os.mkdir("result")
