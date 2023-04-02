@@ -84,6 +84,7 @@ def createWatermarkImage(headline, logo):
 
 if __name__ == "__main__":
     checkDir()
+    # установка шрифта и заготовок логотипов
     headline = ImageFont.truetype("fonts/futurademic.ttf", 240)
     logo_watermark = Image.open('patterns/watermark.png')
     logo_post = Image.open('patterns/post.png')
